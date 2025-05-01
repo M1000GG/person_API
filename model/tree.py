@@ -2,6 +2,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 from model.person import Person
 
+
 class NodeN(BaseModel):
     person: Person
     children: List["NodeN"] = []
