@@ -1,8 +1,5 @@
-from pydantic import BaseModel, Optional
-
+from pydantic import BaseModel
 
 class Location(BaseModel):
-    city: str
-    country: str
-    state_code: Optional[str] = None
-    is_capital: Optional[bool] = False
+    code: int
+    description: str
