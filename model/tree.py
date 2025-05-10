@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from model.person import Person
 
 
@@ -33,12 +33,7 @@ class TreeN(BaseModel):
 
     # Create a new person
     def create_person(self, person: Person, parent_id: Optional[str] = None) -> bool:
-        new_node = NodeN(person)
-
-        # If is the first person, put as root
-        if self.root is None:
-            self.root = new_node
-            return True
+        new_node = NodeN(person=person)
 
         # If parent_id is not provided, add as a root's child
         if parent_id is None:
@@ -64,9 +59,6 @@ class TreeN(BaseModel):
 
     def get_persons(self) -> list[Person]:
         #Get all the persons in the tree
-        if self.root is None:
-            return []
-
         # Call the next function
         result = []
         self.traverse_tree(self.root, result)
@@ -80,9 +72,6 @@ class TreeN(BaseModel):
 
     def update_person(self, id:str, person: Person) -> bool:
         # Update a person in the tree
-        if self.root is None:
-            return False
-
         return self.update_person_recursively(self.root, id, person)
 
     def update_person_recursively(self, node: NodeN, id:str, person: Person) -> bool:
@@ -102,15 +91,12 @@ class TreeN(BaseModel):
 
     def delete_person(self, id:str) -> bool:
         # Delete a person from the tree
-        if self.root is None:
-            return False
-
         # In case of root is being deleted
         if self.root.person.id == id:
             # If root has no children, clear the tree
             if not self.root.children:
-                self.root = None
-                return True
+                # No se puede eliminar la raíz directamente, devolver False
+                return False
 
             # Otherwise can't delete root with children
             return False
@@ -120,9 +106,6 @@ class TreeN(BaseModel):
 
     def get_persons_with_adult_child(self) -> list[Person]:
         # Get persons who have at least one child that is age > 18
-        if self.root is None:
-            return []
-
         # Call the recursively function
         result = []
         self.find_persons_with_adult_child(self.root, result)
@@ -144,9 +127,6 @@ class TreeN(BaseModel):
 
     def filter_by_location_typedoc_gender(self, loc:str, td:str, g:str) -> List[Person]:
         # Filter persons by location, typedoc and gender
-        if self.root is None:
-            return []
-
         # Call the recursively function
         result = []
         self.filter_recursive(self.root, loc, td, g, result)
@@ -154,7 +134,7 @@ class TreeN(BaseModel):
 
     def filter_recursive(self, node: NodeN, loc: str, td:str, g: str, result: List[Person]) -> None:
         # Filter recursively
-        if node.person.location.code == loc and node.person.typedoc.code == td and node.person.gender == g:
+        if str(node.person.location.code) == loc and str(node.person.typedoc.code) == td and node.person.gender == g:
             result.append(node.person)
 
         for child in node.children:
@@ -162,9 +142,6 @@ class TreeN(BaseModel):
 
     def get_persons_by_location(self, location:str) -> list[Person]:
         # Get persons by location code
-        if self.root is None:
-            return []
-
         # Call the recursively function
         result = []
         self.get_by_location_recursively(self.root, location, result)
@@ -172,14 +149,8 @@ class TreeN(BaseModel):
 
     def get_by_location_recursively(self, node: NodeN, location: str, result: list[Person]) -> None:
         # Get by location recursively
-        if node.person.location.code == location:
+        if str(node.person.location.code) == location:
             result.append(node.person)
 
         for child in node.children:
             self.get_by_location_recursively(child, location, result)
-
-
-
-
-
-
