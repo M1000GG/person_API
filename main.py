@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
 from controller.location_controller import location_router, set_location_service
 from controller.person_controller import person_router, set_person_service, set_location_typedoc_services
 from controller.typedoc_controller import typedoc_router, set_typedoc_service
